@@ -19,7 +19,7 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
     /**
      * The possible values for grant type.
      */
-    const GRANT_TYPES = ['authorization_code', 'client_credentials', 'password', 'refresh_token'];
+    const GRANT_TYPES = ['authorization_code', 'client_credentials', 'password'];
 
     /**
      * The client ID.
