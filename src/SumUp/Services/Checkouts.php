@@ -61,7 +61,7 @@ class Checkouts implements SumUpService
      * @throws \SumUp\Exceptions\SumUpAuthenticationException
      * @throws \SumUp\Exceptions\SumUpSDKException
      */
-    public function create($amount, $currency, $checkoutRef, $merchantCode, $description = '', $payFromEmail = null, $returnURL = null, $redirectURL = null)
+    public function create($amount, $currency, $checkoutRef, $merchantCode, $description = '', $payFromEmail = null, $returnURL = null, $redirectURL = null, $hosted_checkout = false)
     {
         if (empty($amount) || !is_numeric($amount)) {
             throw new SumUpArgumentException(ExceptionMessages::getMissingParamMsg('amount'));
@@ -83,6 +83,10 @@ class Checkouts implements SumUpService
             'checkout_reference' => $checkoutRef,
             'description' => $description
         ];
+        if($hosted_checkout){
+            $payload['hosted_checkout'] = ['enabled' => true];
+        }
+
         if (isset($payFromEmail)) {
             $payload['pay_from_email'] = $payFromEmail;
         }
