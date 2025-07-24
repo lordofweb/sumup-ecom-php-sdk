@@ -72,15 +72,17 @@ class Checkouts implements SumUpService
         if (empty($checkoutRef)) {
             throw new SumUpArgumentException(ExceptionMessages::getMissingParamMsg('checkout reference id'));
         }
+        if (empty($merchantCode)) {
+            throw new SumUpArgumentException(ExceptionMessages::getMissingParamMsg('merchant code'));
+        }
 
         $payload = [
+            'merchant_code' => $merchantCode,
             'amount' => $amount,
             'currency' => $currency,
-            'merchant_code' => $merchantCode,
             'checkout_reference' => $checkoutRef,
             'description' => $description
         ];
-
         if (isset($payFromEmail)) {
             $payload['pay_from_email'] = $payFromEmail;
         }
@@ -92,7 +94,7 @@ class Checkouts implements SumUpService
         }
         $path = '/v0.1/checkouts';
         $headers = array_merge(Headers::getStandardHeaders(), Headers::getAuth($this->accessToken));
-        return $this->client->send( 'POST', $path, $payload, $headers);
+        return $this->client->send('POST', $path, $payload, $headers);
     }
 
     /**
