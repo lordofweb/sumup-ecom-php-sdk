@@ -44,14 +44,14 @@ class Checkouts implements SumUpService
     /**
      * Create new checkout.
      *
-     * @param float  $amount
+     * @param float $amount
      * @param string $currency
      * @param string $checkoutRef
      * @param string $payToEmail
      * @param string $description
-     * @param null   $payFromEmail
-     * @param null   $returnURL
-     * @param null   $redirectURL
+     * @param null $payFromEmail
+     * @param null $returnURL
+     * @param null $redirectURL
      *
      * @return \SumUp\HttpClients\Response
      *
@@ -172,7 +172,7 @@ class Checkouts implements SumUpService
      * @param string $checkoutId
      * @param string $customerId
      * @param string $cardToken
-     * @param int    $installments
+     * @param int $installments
      *
      * @return \SumUp\HttpClients\Response
      *
@@ -205,5 +205,33 @@ class Checkouts implements SumUpService
         $path = '/v0.1/checkouts/' . $checkoutId;
         $headers = array_merge(Headers::getStandardHeaders(), Headers::getAuth($this->accessToken));
         return $this->client->send('PUT', $path, $payload, $headers);
+    }
+
+    /**
+     * @param $merchantCode
+     * @return \SumUp\HttpClients\Response
+     * @throws SumUpArgumentException
+     * @throws \SumUp\Exceptions\SumUpConnectionException
+     * @throws \SumUp\Exceptions\SumUpResponseException
+     * @throws \SumUp\Exceptions\SumUpAuthenticationException
+     * @throws \SumUp\Exceptions\SumUpSDKException
+     */
+    public function getMerchantPaymentMethods($merchantCode, $currency = 'EUR', $amount = null)
+    {
+        if (empty($merchantCode)) {
+            throw new SumUpArgumentException(ExceptionMessages::getMissingParamMsg('merchant code'));
+        }
+
+        $payload = [
+            'currency' => $currency,
+        ];
+
+        if(isset($amount) && is_float($amount)){
+            $payload['amount'] = $amount;
+        }
+
+        $path = '/v0.1/merchants/' . $merchantCode . '/payment-methods';
+        $headers = array_merge(Headers::getStandardHeaders(), Headers::getAuth($this->accessToken));
+        return $this->client->send('GET', $path, $payload, $headers);
     }
 }
