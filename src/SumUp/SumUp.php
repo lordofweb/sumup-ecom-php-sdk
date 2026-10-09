@@ -49,7 +49,7 @@ class SumUp
      *
      * @throws SumUpSDKException
      */
-    public function __construct(array $config = [], SumUpHttpClientInterface $customHttpClient = null)
+    public function __construct(array $config = [], ?SumUpHttpClientInterface $customHttpClient = null)
     {
         $this->appConfig = new ApplicationConfiguration($config);
         $this->client = HttpClientsFactory::createHttpClient($this->appConfig, $customHttpClient);
@@ -97,7 +97,7 @@ class SumUp
      *
      * @return Authorization
      */
-    public function getAuthorizationService(ApplicationConfigurationInterface $config = null)
+    public function getAuthorizationService(?ApplicationConfigurationInterface $config = null)
     {
         if (empty($config)) {
             $cfg = $this->appConfig;
@@ -114,7 +114,7 @@ class SumUp
      *
      * @return Checkouts
      */
-    public function getCheckoutService(AccessToken $accessToken = null)
+    public function getCheckoutService(?AccessToken $accessToken = null)
     {
         if (!empty($accessToken)) {
             $accToken = $accessToken;
@@ -131,7 +131,7 @@ class SumUp
      *
      * @return Customers
      */
-    public function getCustomerService(AccessToken $accessToken = null)
+    public function getCustomerService(?AccessToken $accessToken = null)
     {
         if (!empty($accessToken)) {
             $accToken = $accessToken;
@@ -148,7 +148,7 @@ class SumUp
      *
      * @return Transactions
      */
-    public function getTransactionService(AccessToken $accessToken = null)
+    public function getTransactionService(?AccessToken $accessToken = null)
     {
         if (!empty($accessToken)) {
             $accToken = $accessToken;
@@ -165,7 +165,7 @@ class SumUp
      *
      * @return Merchant
      */
-    public function getMerchantService(AccessToken $accessToken = null)
+    public function getMerchantService(?AccessToken $accessToken = null)
     {
         if (!empty($accessToken)) {
             $accToken = $accessToken;
@@ -182,7 +182,7 @@ class SumUp
      *
      * @return Payouts
      */
-    public function getPayoutService(AccessToken $accessToken = null)
+    public function getPayoutService(?AccessToken $accessToken = null)
     {
         if (!empty($accessToken)) {
             $accToken = $accessToken;
@@ -197,7 +197,7 @@ class SumUp
      *
      * @return Custom
      */
-    public function getCustomService(AccessToken $accessToken = null)
+    public function getCustomService(?AccessToken $accessToken = null)
     {
         if (!empty($accessToken)) {
             $accToken = $accessToken;
