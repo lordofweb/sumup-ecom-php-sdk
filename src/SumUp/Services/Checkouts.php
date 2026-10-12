@@ -83,7 +83,7 @@ class Checkouts implements SumUpService
             'checkout_reference' => $checkoutRef,
             'description' => $description
         ];
-        if($hosted_checkout){
+        if ($hosted_checkout) {
             $payload['hosted_checkout'] = ['enabled' => true];
         }
 
@@ -230,7 +230,7 @@ class Checkouts implements SumUpService
             'currency' => $currency,
         ];
 
-        if(isset($amount) && is_float($amount)){
+        if (isset($amount) && is_float($amount)) {
             $payload['amount'] = $amount;
         }
 
