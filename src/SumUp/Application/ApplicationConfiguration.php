@@ -3,6 +3,7 @@
 namespace SumUp\Application;
 
 use SumUp\Exceptions\SumUpConfigurationException;
+use SumUp\SdkInfo;
 
 /**
  * Class ApplicationConfiguration
@@ -15,6 +16,11 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
      * The default scopes that are recommended to be requested every time.
      */
     const DEFAULT_SCOPES = ['payments', 'transactions.history', 'user.app-settings', 'user.profile_readonly'];
+
+    /**
+     * Header name for the SDK's User-Agent.
+     */
+    const USER_AGENT_HEADER = 'User-Agent';
 
     /**
      * The possible values for grant type.
@@ -106,6 +112,13 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
     protected $customHeaders;
 
     /**
+     * Path to a custom CA bundle. If not provided, the SDK ships one by default.
+     *
+     * @var string|null
+     */
+    protected $caBundlePath;
+
+    /**
      * The API key for authentication.
      *
      * @var string|null
@@ -134,7 +147,8 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
             'username' => null,
             'password' => null,
             'use_guzzlehttp_over_curl' => false,
-            'custom_headers' => []
+            'custom_headers' => [],
+            'ca_bundle_path' => null
         ], $config);
 
         $this->apiKey = $config['api_key'];
@@ -150,6 +164,7 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
         $this->refreshToken = $config['refresh_token'];
         $this->setForceGuzzle($config['use_guzzlehttp_over_curl']);
         $this->setCustomHeaders($config['custom_headers']);
+        $this->setCABundlePath($config['ca_bundle_path']);
     }
 
     /**
@@ -283,6 +298,20 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
     }
 
     /**
+     * Returns the path to the CA bundle used for HTTPS verification.
+     *
+     * @return string|null
+     */
+    public function getCABundlePath()
+    {
+        if (!empty($this->caBundlePath)) {
+            return $this->caBundlePath;
+        }
+
+        return $this->getDefaultCABundlePath();
+    }
+
+    /**
      * Returns the API key if set.
      *
      * @return string|null
@@ -332,7 +361,7 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
     protected function setGrantType($grantType)
     {
         if (!in_array($grantType, $this::GRANT_TYPES)) {
-            throw new SumUpConfigurationException('Invalid parameter for "grant_type". Allowed values are: ' . implode($this::GRANT_TYPES, ' | ') . '.');
+            throw new SumUpConfigurationException('Invalid parameter for "grant_type". Allowed values are: ' . implode(' | ', $this::GRANT_TYPES) . '.');
         }
         $this->grantType = $grantType;
     }
@@ -370,6 +399,49 @@ class ApplicationConfiguration implements ApplicationConfigurationInterface
      */
     public function setCustomHeaders($customHeaders)
     {
-        $this->customHeaders = is_array($customHeaders) ? $customHeaders : [];
+        $headers = is_array($customHeaders) ? $customHeaders : [];
+        $headers[self::USER_AGENT_HEADER] = SdkInfo::getUserAgent();
+
+        $this->customHeaders = $headers;
+    }
+
+    /**
+     * Set the CA bundle path used for TLS verification.
+     *
+     * @param string|null $caBundlePath
+     *
+     * @throws SumUpConfigurationException
+     */
+    protected function setCABundlePath($caBundlePath)
+    {
+        if ($caBundlePath === null || $caBundlePath === '') {
+            $this->caBundlePath = null;
+            return;
+        }
+
+        if (!is_string($caBundlePath)) {
+            throw new SumUpConfigurationException('Invalid value for "ca_bundle_path". Expected string path or null.');
+        }
+
+        if (!is_readable($caBundlePath)) {
+            throw new SumUpConfigurationException(sprintf('The provided ca_bundle_path "%s" is not readable.', $caBundlePath));
+        }
+
+        $this->caBundlePath = $caBundlePath;
+    }
+
+    /**
+     * Returns the path to the CA bundle shipped with the SDK, if present.
+     *
+     * @return string|null
+     */
+    private function getDefaultCABundlePath()
+    {
+        $path = realpath(__DIR__ . '/../../../resources/ca-bundle.crt');
+        if ($path && is_readable($path)) {
+            return $path;
+        }
+
+        return null;
     }
 }
