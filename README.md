@@ -58,7 +58,7 @@ For a full list of classes, see the [API reference page](https://github.com/sumu
 
 | Version | Status | PHP Version |
 |--- |--- |--- |
-| 1.x | Latest | \>= 5.6 |
+| 1.x | Latest | \>= 7.1 |
 
 ## License
 
